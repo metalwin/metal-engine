@@ -13,3 +13,4 @@ rootProject.name = 'metal-engine'
 
 // Subprojects
 include ':metal-api'
+include ':metal-model'

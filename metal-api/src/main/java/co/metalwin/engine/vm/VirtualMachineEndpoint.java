@@ -20,6 +20,6 @@ public class VirtualMachineEndpoint {
 
     @POST
     public CompletionStage<String> create(CreateVirtualMachineRequest request) {
-        return CompletableFuture.completedFuture(null);
+        return CompletableFuture.completedFuture(request.getName());
     }
 }
