@@ -12,4 +12,4 @@ pluginManagement {
 rootProject.name = 'metal-engine'
 
 // Subprojects
-include ':metal-server'
+include ':metal-api'

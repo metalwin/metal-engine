@@ -7,10 +7,10 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
 /**
- * {@link EngineServerResource}
+ * {@link EngineEndpoint}
  */
 @QuarkusTest
-class EngineServerResourceTest {
+class EngineEndpointTest {
     @Test
     public void testHelloEndpoint() {
         given()

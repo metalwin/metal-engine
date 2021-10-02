@@ -9,7 +9,8 @@ import javax.ws.rs.core.MediaType;
  * Platform web services for the engine
  */
 @Path("/engine")
-public class EngineServerResource {
+public class EngineEndpoint {
+
     @GET
     @Path("ping")
     @Produces(MediaType.TEXT_PLAIN)
