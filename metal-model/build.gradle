@@ -32,6 +32,9 @@ flyway {
     schemas = ['metalwin']
 }
 
+// Add generated sources to available source dirs
+sourceSets.main.java.srcDirs += ['src/generated/java']
+
 jooq {
     version = '3.15.3'
 
@@ -59,7 +62,7 @@ jooq {
                     // This package is not checked out on the git repository and
                     // needs to be generated to have a working environment.
                     target {
-                        directory = 'src/main/java'
+                        directory = 'src/generated/java'
                         packageName = 'jooq.generated'
                     }
                 }
