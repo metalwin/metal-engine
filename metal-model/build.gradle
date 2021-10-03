@@ -1,6 +1,7 @@
 plugins {
     id 'java'
-    id 'io.quarkus'
+    id 'nu.studer.jooq' version '6.0.1'
+    id 'org.flywaydb.flyway' version '7.15.0'
 }
 
 version '0.0.1'
@@ -10,12 +11,68 @@ repositories {
     mavenLocal()
 }
 
+configurations {
+    flywayMigration
+}
+
 dependencies {
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    jooqGenerator "org.postgresql:postgresql:${postgresDriverVersion}"
+    flywayMigration "org.postgresql:postgresql:${postgresDriverVersion}"
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
 
-    testImplementation 'io.quarkus:quarkus-junit5'
-    testImplementation "io.rest-assured:rest-assured:${restAssuredVersion}"
+flyway {
+    configurations = ['flywayMigration']
+    url = 'jdbc:postgresql://localhost:5432/metalwin'
+    user = 'metalwin'
+    password = 'metalwin'
+    locations = ['filesystem:./database/migrations']
+    schemas = ['metalwin']
+}
+
+jooq {
+    version = '3.15.3'
+
+    configurations {
+        main {
+            generationTool {
+                // This is the JDBC configuration used to generate jOOQ statements.
+                // See `gradle.properties` files to see the test values.
+
+                // Note that in order to generate the files you must need
+                // the Postgres database up and running and with the schema
+                // created.
+                jdbc {
+                    driver = 'org.postgresql.Driver'
+                    url = flyway.url
+                    user = flyway.user
+                    password = flyway.password
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        includes = 'metalwin.*'
+                    }
+                    // This package is not checked out on the git repository and
+                    // needs to be generated to have a working environment.
+                    target {
+                        directory = 'src/main/java'
+                        packageName = 'jooq.generated'
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Before generate jOOQ statements we try to apply all flyway migrations.
+// This task is part of the incremental builds and build cache
+tasks.named('generateJooq').configure {
+    dependsOn tasks.named('flywayMigrate')
+    // support incremental builds and build caching
+    allInputsDeclared = true
+    outputs.cacheIf { true }
 }
